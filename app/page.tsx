@@ -1,11 +1,37 @@
 'use client';
 import { useState } from 'react';
 
+// footer component stays intact
+const Footer = () => (
+  <div className="mt-16 pt-8 pb-4 text-center border-t border-gray-800/50 w-full">
+    <div className="flex justify-center gap-8 mb-4 text-sm font-bold">
+      <a 
+        href="https://x.com/nuggieseth_" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="text-gray-400 hover:text-white transition-colors"
+      >
+        𝕏 / TWITTER
+      </a>
+      <a 
+        href="https://opensea.io/collection/nuggiesnft/overview" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="text-gray-400 hover:text-blue-400 transition-colors"
+      >
+        🌊 OPENSEA
+      </a>
+    </div>
+    <p className="text-gray-600 text-[10px] tracking-widest uppercase">
+      © {new Date().getFullYear()} nuggies. all rights reserved.
+    </p>
+  </div>
+);
+
 export default function Home() {
   const [contract, setContract] = useState('');
   const [chain, setChain] = useState('eth');
   const [loading, setLoading] = useState(false);
-  
   const [collection, setCollection] = useState<any>(null);
   const [holders, setHolders] = useState<any[]>([]);
   const [nfts, setNfts] = useState<any[]>([]);
@@ -53,14 +79,13 @@ export default function Home() {
     
     const a = document.createElement('a');
     a.href = url;
-    // changed the file name slightly to clarify it's addresses only
     a.download = `${collection?.name || 'snapshot'}-${chain}-addresses-only.csv`;
     a.click();
   };
 
   return (
     <main className="flex flex-col items-center min-h-screen bg-[#121212] text-white p-6">
-      <div className="max-w-6xl w-full">
+      <div className="max-w-6xl w-full flex-1 flex flex-col">
         {/* HEADER */}
         <div className="text-center mb-10 mt-8">
           <h1 className="text-4xl font-extrabold mb-2 tracking-tight">nuggies explorer 🔍</h1>
@@ -68,7 +93,7 @@ export default function Home() {
         </div>
 
         {/* SEARCH BAR */}
-        <div className="flex gap-2 max-w-2xl mx-auto mb-10">
+        <div className="flex gap-2 max-w-2xl mx-auto mb-10 w-full">
           <select 
             value={chain} 
             onChange={(e) => setChain(e.target.value)}
@@ -96,7 +121,7 @@ export default function Home() {
 
         {/* RESULTS SECTION */}
         {collection && (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in mb-10">
             {/* TOP BAR: INFO & SNAPSHOT BUTTON */}
             <div className="flex flex-col md:flex-row justify-between items-center bg-[#1e1e1e] p-6 rounded-2xl border border-gray-800 mb-6">
               <div className="flex items-center gap-4 mb-4 md:mb-0">
@@ -195,6 +220,7 @@ export default function Home() {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }
