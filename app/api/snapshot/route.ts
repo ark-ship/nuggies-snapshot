@@ -41,9 +41,11 @@ export async function GET(request: Request) {
     if (!imageUrl) {
       const firstNft = await alchemy.nft.getNftsForContract(contract, { pageSize: 1 }).catch(() => ({ nfts: [] }));
       if (firstNft.nfts && firstNft.nfts.length > 0) {
+        const firstData: any = firstNft.nfts[0]; // kita kasih any biar typescript tutup mata
         imageUrl = resolveImage(
-          firstNft.nfts[0].image?.cachedUrl || 
-          firstNft.nfts[0].rawMetadata?.image as string
+          firstData.image?.cachedUrl || 
+          firstData.rawMetadata?.image ||
+          firstData.raw?.metadata?.image
         );
       }
     }
