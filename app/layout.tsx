@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Silkscreen } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 // manggil font silkscreen biar pixelnya tetep clean dan kebaca
@@ -20,7 +21,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={pixelFont.className}>{children}</body>
+      <body className={pixelFont.className}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
