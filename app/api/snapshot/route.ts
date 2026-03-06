@@ -55,7 +55,7 @@ export async function GET(request: Request) {
 
     // fetch all holders using pagination
     do {
-      const response = await alchemy.nft.getOwnersForContract(contract, {
+      const response: any = await alchemy.nft.getOwnersForContract(contract, {
         withTokenBalances: true,
         pageKey,
       });
