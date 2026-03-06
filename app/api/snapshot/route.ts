@@ -35,9 +35,8 @@ export async function GET(request: Request) {
   const alchemy = new Alchemy(config);
 
   try {
-    const metadata = await alchemy.nft.getContractMetadata(contract).catch(() => ({}));
-    let imageUrl = resolveImage(metadata.openSea?.imageUrl);
-
+    const metadata: any = await alchemy.nft.getContractMetadata(contract).catch(() => ({}));
+    let imageUrl = resolveImage(metadata?.openSea?.imageUrl);
     // fallback: if opensea image is empty, grab the first NFT's image
     if (!imageUrl) {
       const firstNft = await alchemy.nft.getNftsForContract(contract, { pageSize: 1 }).catch(() => ({ nfts: [] }));
