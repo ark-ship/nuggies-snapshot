@@ -64,8 +64,8 @@ export async function GET(request: Request) {
     } while (pageKey);
 
     // calculate total token balance per wallet
-    const cleanData = owners.map((owner) => {
-      const totalBalance = owner.tokenBalances.reduce((sum, token) => {
+    const cleanData = owners.map((owner: any) => {
+      const totalBalance = owner.tokenBalances.reduce((sum: number, token: any) => {
         return sum + (Number(token.balance) || 0);
       }, 0);
 
