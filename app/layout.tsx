@@ -9,10 +9,16 @@ const pixelFont = Silkscreen({
   weight: ['400', '700'], 
 });
 
-export const metadata: Metadata = {
-  title: 'Nuggies Explorer',
-  description: 'snapshot holders & view collection metadata instantly.',
+export const metadata = {
+  title: 'Nuggies Explorer | NFT Holder Snapshot Tool',
+  description: 'Instantly export NFT holder lists to CSV. Supports Ethereum, Base, and Abstract chains. Built for the culture by Nuggies.',
+  openGraph: {
+    title: 'Nuggies Explorer',
+    description: 'The ultimate tool for NFT communities.',
+    images: ['icon.png'],
+  },
 };
+
 
 export default function RootLayout({
   children,

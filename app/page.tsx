@@ -14,7 +14,7 @@ const Footer = () => (
         𝕏 / TWITTER
       </a>
       <a 
-        href="https://opensea.io/collection/nuggiesnft/overview" 
+        href="https://opensea.io/collection/nuggiesnft" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="text-gray-400 hover:text-blue-400 transition-colors"
@@ -37,7 +37,7 @@ export default function Home() {
   const [nfts, setNfts] = useState<any[]>([]);
 
   const handleFetch = async () => {
-    if (!contract) return alert('address is empty bro, please fill it in');
+    if (!contract) return alert('Address is empty, please fill it in');
     setLoading(true);
     setCollection(null);
     setHolders([]);
@@ -59,7 +59,7 @@ export default function Home() {
       setHolders(snapJson.holders);
       setNfts(nftJson.nfts || []);
     } catch (error: any) {
-      alert('whoops error bro: ' + error.message);
+      alert('Whoops, error: ' + error.message);
     }
     
     setLoading(false);
@@ -81,6 +81,59 @@ export default function Home() {
     a.href = url;
     a.download = `${collection?.name || 'snapshot'}-${chain}-addresses-only.csv`;
     a.click();
+  };
+
+  const payAndDownload = async () => {
+    if (holders.length === 0) return alert('No data to download bro');
+    if (typeof window === 'undefined' || !(window as any).ethereum) {
+      return alert('Please install MetaMask to pay and download bro!');
+    }
+
+    try {
+      const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+      const sender = accounts[0];
+
+      // 1. Check Vercel KV Database to see if this wallet has paid for this contract
+      const checkRes = await fetch(`/api/payment?wallet=${sender}&contract=${contract}&chain=${chain}`);
+      const checkData = await checkRes.json();
+
+      if (checkData.hasPaid) {
+        // If already paid, give the file immediately
+        downloadCsv(); 
+        return;
+      }
+
+      // 2. If not paid, request 0.0005 ETH
+      // (Hex value for 500000000000000 wei)
+      const feeHex = '0x1C6BF52634000'; 
+      
+      
+      const devWallet = '0x30CD8a409F620eb360438cEdA777064cBADC070A'; 
+
+      alert('Pay 0.0005 ETH once to unlock lifetime snapshots for this collection');
+
+      const txHash = await (window as any).ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: sender,
+          to: devWallet,
+          value: feeHex,
+        }],
+      });
+
+      if (txHash) {
+        // 3. Save the payment record permanently to Vercel KV Database
+        await fetch('/api/payment', {
+          method: 'POST',
+          body: JSON.stringify({ wallet: sender, contract, chain, txHash })
+        });
+        
+        downloadCsv(); 
+      }
+    } catch (error: any) {
+      console.error(error);
+      alert('Payment cancelled.');
+    }
   };
 
   return (
@@ -140,8 +193,10 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+              
+              {/* PAYMENT BUTTON */}
               <button
-                onClick={downloadCsv}
+                onClick={payAndDownload}
                 className="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-500 transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]"
               >
                 📸 take snapshot
@@ -195,7 +250,6 @@ export default function Home() {
                           <div className="mt-2 flex flex-wrap gap-1.5">
                             {/* showing max 3 traits so the box doesn't get too long */}
                             {nft.traits?.slice(0, 3).map((trait: any, idx: number) => {
-                              // sometimes metadata is just a string, sometimes an object
                               const traitValue = trait.value !== undefined ? trait.value : trait;
                               return (
                                 <span key={idx} className="text-[10px] bg-[#3a3a3a] border border-gray-600 text-gray-200 px-2 py-1 rounded-md truncate max-w-[80px] font-medium">
