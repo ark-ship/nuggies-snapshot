@@ -104,6 +104,8 @@ export async function POST(request: Request) {
   );
 }
 
+    const packageData = matchedPackage;
+
     const address = wallet.toLowerCase();
 
     const { data: user, error: userError } =
@@ -178,7 +180,7 @@ export async function POST(request: Request) {
       await supabase.from('payments').insert({
         tx_hash: txHash,
         wallet: address,
-        credits_added: matchedPackage.credits,
+        credits_added: packageData!.credits,
         chain,
       });
 
