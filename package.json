@@ -9,14 +9,19 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.11",
+    "@supabase/supabase-js": "^2.108.2",
+    "@tanstack/react-query": "^5.101.1",
     "@vercel/analytics": "^1.6.1",
     "@vercel/kv": "^3.0.0",
     "alchemy-sdk": "^3.6.5",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "redis": "^5.11.0",
-    "vercel": "^50.29.0"
+    "redis": "^5.12.1",
+    "vercel": "^50.29.0",
+    "viem": "^2.53.1",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Alchemy, Network } from 'alchemy-sdk';
+import { supabase } from '@/lib/supabase';
 
 const resolveImage = (url: string | undefined) => {
   if (!url) return '';
@@ -14,10 +15,39 @@ export async function GET(request: Request) {
   const contract = searchParams.get('contract');
   const chain = searchParams.get('chain') || 'eth';
 
-  if (!contract) {
-    return NextResponse.json({ error: 'contract address is missing bro' }, { status: 400 });
-  }
+  const wallet = searchParams.get('wallet');
 
+if (!wallet) {
+  return NextResponse.json(
+    { error: 'connect wallet first' },
+    { status: 401 }
+  );
+}
+
+
+  if (!contract) {
+    return NextResponse.json({ error: 'contract address is missing' }, { status: 400 });
+  }
+  
+  const { data: user } = await supabase
+  .from('users')
+  .select('*')
+  .eq('address', wallet.toLowerCase())
+  .single();
+
+if (!user) {
+  return NextResponse.json(
+    { error: 'no credits found' },
+    { status: 403 }
+  );
+}
+
+if (!user?.lifetime && (user?.credits || 0) <= 0) {
+  return NextResponse.json(
+    { error: 'out of credits bro' },
+    { status: 403 }
+  );
+}
   // network selection logic
   let network;
   if (chain === 'base') {
@@ -78,7 +108,19 @@ export async function GET(request: Request) {
     // sort from highest holder (whale) to lowest
     cleanData.sort((a, b) => b.balance - a.balance);
 
-    return NextResponse.json({ 
+if (!user?.lifetime) {
+  await supabase
+    .from('users')
+    .update({
+      credits: Math.max(
+        0,
+        (user.credits || 0) - 1
+      ),
+    })
+    .eq('address', wallet.toLowerCase());
+}
+
+return NextResponse.json({
       collection: {
         name: metadata.name || 'Unknown Collection',
         image: imageUrl || '', 
